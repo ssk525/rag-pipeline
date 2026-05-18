@@ -1,0 +1,127 @@
+[
+  {
+    "question": "What is scaled dot-product attention and how does it work?",
+    "ground_truth": "Scaled dot-product attention computes a weighted sum of values where weights are determined by the compatibility between queries and keys. The formula is Attention(Q,K,V) = softmax(QK^T / sqrt(d_k)) V, where the scaling factor 1/sqrt(d_k) prevents dot products from growing too large.",
+    "source_context": "attention_mechanisms.md"
+  },
+  {
+    "question": "What is the difference between self-attention and cross-attention?",
+    "ground_truth": "In self-attention, queries, keys, and values all come from the same sequence, used in Transformer encoders like BERT and GPT. In cross-attention, queries come from one sequence while keys and values come from another, used in encoder-decoder models for translation and summarization.",
+    "source_context": "attention_mechanisms.md"
+  },
+  {
+    "question": "What accuracy does ViT-Large achieve on ImageNet?",
+    "ground_truth": "ViT-Large achieves 87.76% top-1 accuracy on ImageNet when pre-trained on large datasets.",
+    "source_context": "attention_mechanisms.md"
+  },
+  {
+    "question": "What is Flash Attention and what speedup does it achieve?",
+    "ground_truth": "Flash Attention is a hardware-aware optimization that reduces memory usage from O(n^2) to O(n). It achieves 2-4x speedup on common sequence lengths (512-2048) while being mathematically equivalent to standard attention.",
+    "source_context": "attention_mechanisms.md"
+  },
+  {
+    "question": "What is RAG and why does it matter?",
+    "ground_truth": "Retrieval-Augmented Generation (RAG) enhances LLMs by providing relevant external knowledge from a document corpus, grounding responses in factual data and reducing hallucination. It was introduced by Lewis et al. (2020) at Meta AI.",
+    "source_context": "rag_overview.md"
+  },
+  {
+    "question": "What is the hallucination rate of GPT-4 on factual queries?",
+    "ground_truth": "GPT-4 hallucinates in approximately 3-5% of responses on factual queries, while smaller models can hallucinate at rates of 15-25%.",
+    "source_context": "rag_overview.md"
+  },
+  {
+    "question": "How does semantic chunking compare to fixed-size chunking?",
+    "ground_truth": "Semantic chunking improves retrieval precision by 12-18% compared to fixed-size chunking on document QA tasks, though fixed-size chunking is more predictable for embedding models trained on fixed-length inputs.",
+    "source_context": "rag_overview.md"
+  },
+  {
+    "question": "How much does hybrid search improve recall over vector-only search?",
+    "ground_truth": "Hybrid search typically improves recall by 15-25% over vector-only search by combining sparse BM25 keyword matching with dense vector semantic retrieval.",
+    "source_context": "rag_overview.md"
+  },
+  {
+    "question": "How much does reranking improve precision in production systems?",
+    "ground_truth": "Reranking improves precision@5 by 20-30% in production systems. Cross-encoder models like Cohere Rerank attend to both query and document jointly, making them much more accurate than bi-encoder similarity.",
+    "source_context": "rag_overview.md"
+  },
+  {
+    "question": "What is the typical end-to-end latency budget for a RAG system?",
+    "ground_truth": "The typical latency is 700-2500ms end-to-end: embedding query ~50ms, vector search ~20-50ms, BM25 search ~10-30ms, reranking ~100-300ms, and LLM generation ~500-2000ms.",
+    "source_context": "rag_overview.md"
+  },
+  {
+    "question": "What are the common failure modes in RAG systems?",
+    "ground_truth": "Common failures include: chunks too small (<100 tokens) losing context, chunks too large (>800 tokens) diluting information, no reranker causing low precision, no evaluation beyond manual testing, and no citations producing a 'confident liar'.",
+    "source_context": "rag_overview.md"
+  },
+  {
+    "question": "What is the Ragas framework used for?",
+    "ground_truth": "Ragas is the standard open-source framework for RAG evaluation. It computes faithfulness, answer relevancy, context precision, and context recall using LLM-as-judge methodology, providing both aggregate and per-question scores.",
+    "source_context": "rag_overview.md"
+  },
+  {
+    "question": "Describe the original Transformer encoder architecture.",
+    "ground_truth": "The Transformer encoder processes input through input embedding, positional encoding, and N=6 encoder layers. Each layer contains multi-head self-attention with 8 heads, position-wise feed-forward network with d_ff=2048, layer normalization and residual connections.",
+    "source_context": "transformer_architecture.md"
+  },
+  {
+    "question": "What are Rotary Position Embeddings (RoPE)?",
+    "ground_truth": "RoPE (Rotary Position Embeddings) is a modern positional encoding method used in Llama and most recent models, as an alternative to the original sinusoidal encodings or learned positional embeddings.",
+    "source_context": "transformer_architecture.md"
+  },
+  {
+    "question": "What is SwiGLU activation and which models use it?",
+    "ground_truth": "SwiGLU is a modern feed-forward network variant where FFN(x) = (Swish(xW_1) ⊙ xV)W_2. It is used in Llama 2 and 3 as a replacement for the original ReLU or GELU activations.",
+    "source_context": "transformer_architecture.md"
+  },
+  {
+    "question": "What are the sizes of the GPT model family?",
+    "ground_truth": "GPT-1 (2018): 117M parameters, GPT-2 (2019): 1.5B parameters, GPT-3 (2020): 175B parameters, GPT-4 (2023): estimated 1.8T parameters using mixture of experts.",
+    "source_context": "transformer_architecture.md"
+  },
+  {
+    "question": "What is the Chinchilla scaling law?",
+    "ground_truth": "The Chinchilla scaling law by Hoffmann et al. (2022) states that for optimal efficiency, the number of training tokens should be approximately 20 times the number of parameters. A 7B model should be trained on ~140B tokens.",
+    "source_context": "transformer_architecture.md"
+  },
+  {
+    "question": "How does Mixture of Experts (MoE) work in Mixtral?",
+    "ground_truth": "Mixtral 8x7B uses 8 expert FFN layers and routes each token to 2 active experts. It has 47B total parameters but only 12B active per token, achieving the quality of larger dense models at lower inference cost.",
+    "source_context": "transformer_architecture.md"
+  },
+  {
+    "question": "What is Grouped Query Attention (GQA)?",
+    "ground_truth": "GQA shares key-value heads across multiple query heads. Llama 3 uses 32 query heads and 8 KV heads, reducing memory usage by ~4x with minimal quality loss.",
+    "source_context": "transformer_architecture.md"
+  },
+  {
+    "question": "What are the stages of modern LLM training?",
+    "ground_truth": "Modern LLMs are trained in stages: 1) Pre-training with next-token prediction on trillions of tokens, 2) Supervised Fine-Tuning (SFT) to learn to follow instructions, 3) RLHF/DPO to align with human preferences.",
+    "source_context": "transformer_architecture.md"
+  },
+  {
+    "question": "What is multi-head attention and why is it useful?",
+    "ground_truth": "Multi-head attention allows the model to jointly attend to information from different representation subspaces. Different attention heads capture different types of relationships like syntactic dependencies, semantic similarities, or positional patterns.",
+    "source_context": "attention_mechanisms.md"
+  },
+  {
+    "question": "What is the computational complexity of standard self-attention?",
+    "ground_truth": "Standard self-attention has O(n^2) complexity with respect to sequence length n. Approaches to address this include Sparse Attention (Longformer), Linear Attention (Performer), and Flash Attention which reduces memory from O(n^2) to O(n).",
+    "source_context": "attention_mechanisms.md"
+  },
+  {
+    "question": "How does the Vision Transformer (ViT) process images?",
+    "ground_truth": "ViT splits images into fixed-size patches (e.g., 16x16 pixels), flattens and linearly projects each patch, adds positional embeddings, feeds through Transformer encoder layers, and uses the [CLS] token output for classification.",
+    "source_context": "attention_mechanisms.md"
+  },
+  {
+    "question": "What is the standard RAG pipeline and its stages?",
+    "ground_truth": "The standard RAG pipeline has 6 stages: 1) Document Ingestion (load PDFs, web pages), 2) Chunking (split into 200-1000 token pieces), 3) Embedding (convert to vectors), 4) Indexing (store in vector DB), 5) Retrieval (find relevant chunks), 6) Generation (feed context + query to LLM).",
+    "source_context": "rag_overview.md"
+  },
+  {
+    "question": "What is query expansion and how much does it improve recall?",
+    "ground_truth": "Query expansion uses a small LLM call to expand or rephrase the query before retrieval, generating multiple variations to capture different phrasings of the same intent. It can improve recall by 10-15%.",
+    "source_context": "rag_overview.md"
+  }
+]

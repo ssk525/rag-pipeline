@@ -1,0 +1,38 @@
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# ChromaDB
+chroma_db/
+
+# Data (keep sample, ignore user uploads)
+data/uploads/*
+!data/uploads/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Eval results (generated)
+eval/results/*.json
+eval/results/*.csv
+!eval/results/.gitkeep
+
+# Misc
+*.log
