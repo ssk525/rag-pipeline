@@ -36,3 +36,10 @@ eval/results/*.csv
 
 # Misc
 *.log
+logs/
+config/pipeline_config.json
+config/improvement_history.json
+config/feedback.jsonl
+auth.exp
+gh_*/
+gh_*.zip

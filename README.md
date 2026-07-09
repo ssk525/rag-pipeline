@@ -200,6 +200,49 @@ Free tier with generous limits (15 RPM for generation, 1500 RPM for embeddings).
 
 ---
 
+## 🔌 Flask REST API
+
+Start the API server:
+
+```bash
+source venv/bin/activate
+python run_api.py
+```
+
+Default URL: `http://localhost:5000`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/health` | Service health check |
+| `GET` | `/stats` | Pipeline / vector store stats |
+| `GET` | `/config` | Current tuned retrieval config |
+| `PUT` | `/config` | Update `top_k`, `use_hybrid`, `use_reranker` |
+| `POST` | `/documents/ingest` | Ingest docs from directory (`{"directory": "data/sample_docs"}`) |
+| `POST` | `/documents/upload` | Multipart file upload (`files`) |
+| `POST` | `/retrieve` | Retrieval only (`{"question": "..."}`) |
+| `POST` | `/query` | Full RAG query with citations |
+| `POST` | `/eval/run` | Run Ragas evaluation suite |
+| `POST` | `/improve/run` | **Self-improvement loop** — eval + auto-tune retrieval |
+| `POST` | `/feedback` | Store user feedback for debugging |
+
+Example:
+
+```bash
+curl -X POST http://localhost:5000/query \
+  -H "Content-Type: application/json" \
+  -d '{"question": "What is RAG?"}'
+```
+
+Structured logs are written to `logs/rag_pipeline.log`.
+
+---
+
+## 🔄 Self-Improving Loop
+
+`POST /improve/run` evaluates multiple retrieval configurations (hybrid on/off, different `top_k`), scores them with **Ragas**, and persists the best settings to `config/pipeline_config.json`. Future API queries automatically use the tuned config.
+
+---
+
 ## 📜 License
 
 MIT

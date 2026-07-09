@@ -134,6 +134,23 @@ class VectorStore:
 
         return results
 
+    def get_all_documents(self) -> List[Document]:
+        """Load all stored chunks from ChromaDB (for BM25 index rebuild on restart)."""
+        try:
+            collection = self.chroma_client.get_collection(self.collection_name)
+            data = collection.get(include=["documents", "metadatas"])
+            if not data or not data.get("documents"):
+                return []
+
+            documents = []
+            for content, metadata in zip(data["documents"], data["metadatas"]):
+                documents.append(
+                    Document(page_content=content, metadata=metadata or {})
+                )
+            return documents
+        except Exception:
+            return []
+
     def get_collection_stats(self) -> Dict:
         """Get statistics about the stored collection."""
         try:

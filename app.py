@@ -121,14 +121,21 @@ def init_pipeline():
 with st.sidebar:
     st.markdown("### ⚙️ Configuration")
     
-    # API Key status
+    # LLM status
+    use_ollama = os.getenv("USE_OLLAMA", "").strip().lower() in {"1", "true", "yes"}
+    ollama_model = os.getenv("OLLAMA_MODEL", "gemma4:e4b")
     gemini_key = os.getenv("GOOGLE_API_KEY")
     cohere_key = os.getenv("COHERE_API_KEY")
-    
-    if gemini_key:
+
+    if use_ollama:
+        st.success(f"✅ Ollama mode — `{ollama_model}`")
+        if gemini_key:
+            st.caption("Gemini key used for embeddings only")
+    elif gemini_key:
         st.success("✅ Gemini API connected")
     else:
-        st.error("❌ GOOGLE_API_KEY missing")
+        st.error("❌ No LLM configured")
+        st.caption("Set USE_OLLAMA=1 or add GOOGLE_API_KEY in .env")
         entered_key = st.text_input("Enter Gemini API Key:", type="password")
         if entered_key:
             os.environ["GOOGLE_API_KEY"] = entered_key
@@ -350,7 +357,7 @@ if query:
 
         except Exception as e:
             st.error(f"Error: {str(e)}")
-            st.info("Make sure your GOOGLE_API_KEY is set in the .env file.")
+            st.info("Set USE_OLLAMA=1 in .env or add GOOGLE_API_KEY.")
 
 
 # ─── Footer ───
