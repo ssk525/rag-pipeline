@@ -8,7 +8,7 @@
 ![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector_Store-purple)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-**🚀 [Live Demo](https://huggingface.co/spaces/YOUR_USERNAME/rag-pipeline)** · **📊 [Eval Results](#evaluation-results)** · **📐 [Architecture](#architecture)**
+**🚀 [GitHub](https://github.com/ssk525/rag-pipeline)** · **📊 [Eval Results](#evaluation-results)** · **📐 [Architecture](#architecture)** · **🔌 [REST API](#flask-rest-api)**
 
 ---
 
@@ -58,7 +58,7 @@ Not a chatbot demo. A **production-grade retrieval system** that:
 ┌──────────────────────────────────────────────────────────────┐
 │                  GENERATION LAYER                             │
 │                                                               │
-│   Context + Query → Gemini 2.0 Flash → Answer + Citations    │
+│   Context + Query → Gemini / Ollama → Answer + Citations    │
 │                                                               │
 │   • Citation enforcement via system prompt                    │
 │   • Refusal when context is insufficient                     │
@@ -75,7 +75,7 @@ Not a chatbot demo. A **production-grade retrieval system** that:
 | **3. Embed** | Gemini Embeddings | `embedding-001`, 768 dimensions |
 | **4. Store** | ChromaDB | Persistent, deduplicated, metadata-filtered |
 | **5. Retrieve** | Hybrid + Rerank | BM25 + Vector → RRF → Cohere Rerank |
-| **6. Generate** | Gemini 2.0 Flash | Citation-enforced, refusal-aware |
+| **6. Generate** | Gemini / Ollama | Citation-enforced, refusal-aware |
 
 ---
 
@@ -109,27 +109,32 @@ Evaluated on a **25-question test set** with ground-truth answers using [Ragas](
 
 ### Prerequisites
 - Python 3.10+
-- [Google Gemini API key](https://aistudio.google.com/apikey) (free)
-- [Cohere API key](https://dashboard.cohere.com/api-keys) (free tier, optional but recommended)
+- **Option A (free, local):** [Ollama](https://ollama.com) with `gemma4:e4b` model
+- **Option B (cloud):** [Google Gemini API key](https://aistudio.google.com/apikey)
+- [Cohere API key](https://dashboard.cohere.com/api-keys) (optional, for reranking)
 
 ### Installation
 
 ```bash
-# Clone the repo
-git clone https://github.com/YOUR_USERNAME/rag-pipeline.git
+git clone https://github.com/ssk525/rag-pipeline.git
 cd rag-pipeline
 
-# Create virtual environment
 python -m venv venv
-source venv/bin/activate  # macOS/Linux
+source venv/bin/activate
 
-# Install dependencies
 pip install -r requirements.txt
 
-# Set up environment variables
 cp .env.example .env
-# Edit .env and add your API keys
 ```
+
+**For free local AI (recommended):** edit `.env`:
+
+```env
+USE_OLLAMA=1
+OLLAMA_MODEL=gemma4:e4b
+```
+
+**For cloud AI:** add `GOOGLE_API_KEY=your_key` instead.
 
 ### Run the Demo
 
@@ -151,25 +156,28 @@ python run_eval.py
 
 ```
 rag-pipeline/
-├── app.py                      # Streamlit frontend
+├── app.py                      # Streamlit web UI
+├── run_api.py                  # Flask REST API server
 ├── run_eval.py                 # Evaluation runner
-├── requirements.txt
-├── .env.example
+├── api/
+│   └── app.py                  # Flask API endpoints
 ├── src/
-│   ├── pipeline.py             # Orchestrator (main entry point)
-│   ├── document_loader.py      # PDF/TXT/MD loading + cleaning
+│   ├── pipeline.py             # Main orchestrator
+│   ├── document_loader.py      # PDF/TXT/MD loading
 │   ├── chunker.py              # Semantic & fixed-size chunking
-│   ├── embeddings.py           # Gemini embeddings with rate limiting
-│   ├── vector_store.py         # ChromaDB with deduplication
+│   ├── embeddings.py           # Gemini embeddings
+│   ├── vector_store.py         # ChromaDB storage
 │   ├── retriever.py            # Hybrid BM25+Vector + Cohere Rerank
-│   ├── generator.py            # Gemini generation with citations
-│   └── evaluator.py            # Ragas evaluation + reporting
-├── data/
-│   └── sample_docs/            # Sample corpus (AI/ML papers)
-├── eval/
-│   ├── test_questions.json     # 25 eval Q&A pairs
-│   └── results/                # Eval output (JSON + CSV)
-└── chroma_db/                  # Persistent vector store
+│   ├── generator.py            # LLM generation (Gemini / Ollama)
+│   ├── evaluator.py            # Ragas evaluation
+│   ├── self_improve.py         # Self-improvement loop
+│   ├── config_store.py         # Tuned retrieval config
+│   └── logging_config.py       # Structured logging
+├── config/                     # Runtime config (auto-generated)
+├── logs/                       # Log files (auto-generated)
+├── data/sample_docs/           # Sample documents
+├── eval/test_questions.json    # 25 eval questions
+└── chroma_db/                  # Vector database
 ```
 
 ---
@@ -185,8 +193,19 @@ Initial retrieval returns ~20 candidates. The reranker (cross-encoder) re-scores
 ### Why Semantic Chunking?
 Fixed-size chunking at 500 tokens split paragraphs mid-sentence, reducing retrieval quality. Semantic chunking preserves paragraph boundaries, producing coherent chunks that embed better.
 
-### Why Gemini?
-Free tier with generous limits (15 RPM for generation, 1500 RPM for embeddings). Good quality for the cost. Easy to swap for GPT-4o or Claude via LangChain.
+### Why Gemini / Ollama?
+Gemini free tier works well for embeddings and generation. **Ollama** (`USE_OLLAMA=1`) lets you run answers locally for free with no API limits. Easy to swap LLMs via LangChain.
+
+---
+
+## Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| Gemini quota error (429) | Set `USE_OLLAMA=1` in `.env` and run `ollama serve` |
+| No documents loaded | Click "Load Sample Documents" in sidebar, or upload PDFs |
+| Slow answers with Ollama | Normal (~1–2 min). Local 8B model is slower than cloud |
+| API won't start | Run `pip install flask` then `python run_api.py` |
 
 ---
 
