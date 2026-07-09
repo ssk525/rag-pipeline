@@ -63,6 +63,20 @@ class RAGPipeline:
         self._corpus_stats: Dict = {}
         self._chat_history: List[Dict[str, str]] = []
 
+        # Restore BM25 index from persisted ChromaDB (hybrid search breaks without this)
+        store_stats = self.vector_store.get_collection_stats()
+        if store_stats.get("total_chunks", 0) > 0:
+            existing_docs = self.vector_store.get_all_documents()
+            if existing_docs:
+                self._all_chunks = existing_docs
+                self.retriever.build_bm25_index(existing_docs)
+                self._corpus_stats = {
+                    "total_documents": len(existing_docs),
+                    "unique_files": store_stats.get("unique_sources", 0),
+                    "source_files": store_stats.get("source_files", []),
+                }
+                print(f"  ♻️  Restored {len(existing_docs)} chunks from vector store")
+
         print("✅ Pipeline ready.\n")
 
     def ingest_directory(self, directory: str, extensions: Optional[List[str]] = None):
