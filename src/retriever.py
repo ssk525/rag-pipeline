@@ -11,8 +11,6 @@ from dataclasses import dataclass
 from langchain_core.documents import Document
 from rank_bm25 import BM25Okapi
 
-from src.vector_store import VectorStore
-
 
 @dataclass
 class RetrievalResult:
@@ -41,7 +39,7 @@ class HybridRetriever:
 
     def __init__(
         self,
-        vector_store: VectorStore,
+        vector_store,
         use_reranker: bool = True,
         cohere_api_key: Optional[str] = None,
     ):

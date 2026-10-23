@@ -10,9 +10,6 @@ import time
 from typing import List, Dict, Optional
 from dataclasses import dataclass
 
-import pandas as pd
-
-
 @dataclass
 class EvalQuestion:
     """A single evaluation question with ground truth."""
@@ -160,6 +157,8 @@ def _manual_evaluation(
 
 def save_eval_results(results: Dict, output_dir: str = "eval/results"):
     """Save evaluation results to JSON and CSV."""
+    import pandas as pd
+
     os.makedirs(output_dir, exist_ok=True)
 
     # Save full results as JSON

@@ -72,7 +72,7 @@ Not a chatbot demo. A **production-grade retrieval system** that:
 |-------|-----------|---------|
 | **1. Ingest** | Document Loader | PDF, TXT, MD with metadata enrichment |
 | **2. Chunk** | Semantic Chunker | Paragraph-boundary splitting, 100-3000 char range |
-| **3. Embed** | Gemini Embeddings | `embedding-001`, 768 dimensions |
+| **3. Embed** | Gemini Embeddings | `gemini-embedding-001`, 3072 dimensions |
 | **4. Store** | ChromaDB | Persistent, deduplicated, metadata-filtered |
 | **5. Retrieve** | Hybrid + Rerank | BM25 + Vector → RRF → Cohere Rerank |
 | **6. Generate** | Gemini / Ollama | Citation-enforced, refusal-aware |
@@ -92,16 +92,16 @@ Evaluated on a **25-question test set** with ground-truth answers using [Ragas](
 
 > *After running the eval, replace this table with your actual results.*
 
-### Chunking Strategy Comparison
+### Chunking Strategy Comparison (BM25, 25 questions, 23 Oct 2026)
 
-| Metric | Fixed-Size (500 tokens) | Semantic |
-|--------|------------------------|----------|
-| Total Chunks | — | — |
-| Avg Chunk Size | ~2000 chars | Variable |
-| Mid-sentence Splits | Frequent | Rare |
-| Retrieval Quality | Baseline | +12-18% precision |
+These numbers come from `python run_retrieval_eval.py --bm25-only`. They measure whether the labelled source file is retrieved, not Ragas LLM-judge scores. Run `python run_eval.py` when you have an LLM key if you want Faithfulness / Relevancy.
 
-**Decision:** Semantic chunking chosen for production. Fixed-size produces more predictable chunk sizes but breaks semantic boundaries, reducing retrieval quality.
+| chunking | retrieval | chunks | hit@1 | hit@5 | MRR | answer coverage@5 |
+|---|---|---:|---:|---:|---:|---:|
+| semantic | bm25 | 6 | 0.920 | 1.000 | 0.950 | 0.943 |
+| fixed | bm25 | 9 | 0.920 | 1.000 | 0.948 | 0.940 |
+
+On this small three-file corpus both strategies find the right file in the top 5. Semantic is slightly ahead on MRR and answer coverage. Hybrid BM25+vector numbers need Gemini keys (`python run_retrieval_eval.py --with-embeddings`).
 
 ---
 
